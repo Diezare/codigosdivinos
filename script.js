@@ -81,3 +81,80 @@ window.addEventListener('click', function(e) {
         document.body.style.overflow = '';
     }
 });
+
+/* ==========================================
+   Consentimento de Cookies
+========================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+	const cookieBanner = document.getElementById("cookie-banner");
+	const acceptButton = document.getElementById("cookie-accept");
+	const rejectButton = document.getElementById("cookie-reject");
+
+	if (!cookieBanner || !acceptButton || !rejectButton) {
+		return;
+	}
+
+	const consentKey = "codigo_divino_cookie_consent";
+
+	function getCookieConsent() {
+		try {
+			return localStorage.getItem(consentKey);
+		} catch (error) {
+			return null;
+		}
+	}
+
+	function saveCookieConsent(value) {
+		try {
+			localStorage.setItem(consentKey, value);
+		} catch (error) {
+			// Se o navegador bloquear localStorage,
+			// o site continuará funcionando normalmente.
+		}
+	}
+
+	function hideCookieBanner() {
+		cookieBanner.style.display = "none";
+	}
+
+	const consent = getCookieConsent();
+
+	// Primeira visita: mostra o banner
+	if (!consent) {
+		cookieBanner.style.display = "block";
+	}
+
+	// O visitante já aceitou anteriormente
+	if (consent === "accepted") {
+		hideCookieBanner();
+
+		/*
+		 * O Meta Pixel será carregado aqui futuramente.
+		 * NÃO adicionar o Pixel ainda.
+		 */
+	}
+
+	// O visitante recusou anteriormente
+	if (consent === "rejected") {
+		hideCookieBanner();
+	}
+
+	acceptButton.addEventListener("click", function () {
+		saveCookieConsent("accepted");
+		hideCookieBanner();
+
+		/*
+		 * Quando configurarmos o Meta Pixel,
+		 * ele será iniciado SOMENTE neste ponto
+		 * ou quando já existir consentimento "accepted".
+		 */
+	});
+
+	rejectButton.addEventListener("click", function () {
+		saveCookieConsent("rejected");
+		hideCookieBanner();
+	});
+
+});
